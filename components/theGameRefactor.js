@@ -20,17 +20,24 @@ const GameRefactor = () => {
   const [currSelected, setCurrSelected] = useState('')
 
   const arr = new Array(6).fill(new Array(6).fill(0))
-  const selectPieze = (board, type, beforeS, selected) => {
+  const changepiece = (
+    board,
+    type,
+    beforeS,
+    selected,
+    typeToChange,
+    beforeType,
+  ) => {
     /**
-     * Change the type of the touched pieze to 's'
+     * Change the type of the touched piece to 's'
      * this means is going to show in other color
      */
     selected.forEach(index => {
-      board[index] = 's'
+      board[index] = typeToChange
     })
-    /**Return the beforeSelected pieze to their color */
+    /**Return the beforeSelected piece to their color */
     beforeS.forEach(index => {
-      board[index] = currSelected
+      board[index] = beforeType
     })
 
     setVal(board)
@@ -41,13 +48,13 @@ const GameRefactor = () => {
     const selected = getIndexes(board, type)
     const beforeSelected = getIndexes(board, 's')
     /**
-     * If the pieze touched is a selectable one
+     * If the piece touched is a selectable one
      */
     if (!notSelectable.includes(type)) {
-      selectPieze(board, type, beforeSelected, selected)
+      changepiece(board, type, beforeSelected, selected, 's', currSelected)
     }
     /**
-     * If the pieze touched is a free one
+     * If the piece touched is a free one
      * start the process to check if the movement is valid
      */
     if (type === 'F' || type === 'f') {
@@ -68,22 +75,14 @@ const GameRefactor = () => {
         selected.filter(pieza => aroundSelected.includes(pieza)).length !== 0
       ) {
         if (yellows.includes(currSelected)) {
-          /**one cell piezes are the easier to move */
-          selected.forEach(index => {
-            board[index] = currSelected
-          })
-          beforeSelected.forEach(index => {
-            board[index] = type
-          })
+          /**one cell pieces are the easier to move */
+          changepiece(board, type, beforeSelected, selected, currSelected, type)
         }
         if (restPiezes.includes(currSelected)) {
           if (aroundCoincide.length === 0) {
+            /**Movements that only requires one free piece*/
             replace = [...overlap, ...selected]
-            
-            replace.forEach(index => (board[index] = currSelected))
-            notOverlap.forEach(index => (board[index] = type))
-            setVal(board)
-            setCurrSelected('')
+            changepiece(board, type, notOverlap, replace, currSelected, type)
           } else {
             if (
               board[aroundCoincide[0]] !== 'F' &&
