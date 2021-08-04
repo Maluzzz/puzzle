@@ -25,8 +25,14 @@ const GameRefactor = () => {
      * Change the type of the touched pieze to 's'
      * this means is going to show in other color
      */
-    selected.map(index => (board[index] = 's'))
-    beforeS.map(index => (board[index] = currSelected))
+    selected.forEach(index => {
+      board[index] = 's'
+    })
+    /**Return the beforeSelected pieze to their color */
+    beforeS.forEach(index => {
+      board[index] = currSelected
+    })
+
     setVal(board)
     setCurrSelected(type)
   }
@@ -63,14 +69,19 @@ const GameRefactor = () => {
       ) {
         if (yellows.includes(currSelected)) {
           /**one cell piezes are the easier to move */
-          selected.map(index => (board[index] = currSelected))
-          beforeSelected.map(index => (board[index] = type))
+          selected.forEach(index => {
+            board[index] = currSelected
+          })
+          beforeSelected.forEach(index => {
+            board[index] = type
+          })
         }
         if (restPiezes.includes(currSelected)) {
           if (aroundCoincide.length === 0) {
             replace = [...overlap, ...selected]
-            replace.map(index => (board[index] = currSelected))
-            notOverlap.map(index => (board[index] = type))
+            
+            replace.forEach(index => (board[index] = currSelected))
+            notOverlap.forEach(index => (board[index] = type))
             setVal(board)
             setCurrSelected('')
           } else {
@@ -81,9 +92,7 @@ const GameRefactor = () => {
               //NO VALID MOVEMENT
               return null
             } else {
-              const aroundTwoFree = getAround(
-                [...aroundCoincide, ...selected],
-              )
+              const aroundTwoFree = getAround([...aroundCoincide, ...selected])
               overlap =
                 currSelected === 'r'
                   ? beforeSelected.filter(pieza =>
@@ -96,11 +105,11 @@ const GameRefactor = () => {
                       pieza => !aroundTwoFree.includes(pieza),
                     )
                   : notOverlap
-              ;[...selected, ...aroundCoincide, ...overlap].map(
+              ;[...selected, ...aroundCoincide, ...overlap].forEach(
                 index => (board[index] = currSelected),
               )
               replace = currSelected !== 'r' ? beforeSelected : notOverlap
-              replace.map((index, i) => (board[index] = frees[i]))
+              replace.forEach((index, i) => (board[index] = frees[i]))
               const reds = getIndexes(board, 'r')
               const winningReds = getIndexes(finalBoardParsed, 'r')
               if (
