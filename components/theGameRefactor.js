@@ -13,14 +13,16 @@ import {
 import {getIndexes, getAround} from './utils'
 import {getStyle} from './styles'
 
-const value = initBoard.trim().replace(/\n|\s/gi, '').split('')
+const initBoardParsed = initBoard.trim().replace(/\n|\s/gi, '').split('')
 const finalBoardParsed = finalBoard.trim().replace(/\n|\s/gi, '').split('')
+
 const GameRefactor = () => {
-  const [val, setVal] = useState(value)
+  const [stateBoard, setVal] = useState(initBoardParsed)
   const [currSelected, setCurrSelected] = useState('')
 
-  const arr = new Array(6).fill(new Array(6).fill(0))
-  const changepiece = (
+  const baseGrid = new Array(6).fill(new Array(6).fill(0))
+
+  const changePiece = (
     board,
     type,
     beforeS,
@@ -44,20 +46,17 @@ const GameRefactor = () => {
     setCurrSelected(type)
   }
   const handleTouch = (type, board) => {
-    board = Object.keys(board).map(i => board[i])
-    const selected = getIndexes(board, type)
-    const beforeSelected = getIndexes(board, 's')
+    let boardArray = Object.keys(board).map(i => board[i])
+    const selected = getIndexes(boardArray, type)
+    const beforeSelected = getIndexes(boardArray, 's')
     /**
      * If the piece touched is a selectable one
      */
     if (!notSelectable.includes(type)) {
-      changepiece(board, type, beforeSelected, selected, 's', currSelected)
+      changePiece(boardArray, type, beforeSelected, selected, 's', currSelected)
     }
-    /**
-     * If the piece touched is a free one
-     * start the process to check if the movement is valid
-     */
-    if (type === 'F' || type === 'f') {
+    const isFreeTouched = type === 'F' || type === 'f'
+    if (isFreeTouched) {
       const aroundFreeSelected = getAround(selected)
       const aroundSelected = getAround(beforeSelected)
       const aroundCoincide = aroundSelected.filter(one =>
@@ -76,17 +75,31 @@ const GameRefactor = () => {
       ) {
         if (yellows.includes(currSelected)) {
           /**one cell pieces are the easier to move */
-          changepiece(board, type, beforeSelected, selected, currSelected, type)
+          changePiece(
+            boardArray,
+            type,
+            beforeSelected,
+            selected,
+            currSelected,
+            type,
+          )
         }
         if (restPiezes.includes(currSelected)) {
           if (aroundCoincide.length === 0) {
             /**Movements that only requires one free piece*/
             replace = [...overlap, ...selected]
-            changepiece(board, type, notOverlap, replace, currSelected, type)
+            changePiece(
+              boardArray,
+              type,
+              notOverlap,
+              replace,
+              currSelected,
+              type,
+            )
           } else {
             if (
-              board[aroundCoincide[0]] !== 'F' &&
-              board[aroundCoincide[0]] !== 'f'
+              boardArray[aroundCoincide[0]] !== 'F' &&
+              boardArray[aroundCoincide[0]] !== 'f'
             ) {
               //NO VALID MOVEMENT
               return null
@@ -105,11 +118,11 @@ const GameRefactor = () => {
                     )
                   : notOverlap
               ;[...selected, ...aroundCoincide, ...overlap].forEach(
-                index => (board[index] = currSelected),
+                index => (boardArray[index] = currSelected),
               )
               replace = currSelected !== 'r' ? beforeSelected : notOverlap
-              replace.forEach((index, i) => (board[index] = frees[i]))
-              const reds = getIndexes(board, 'r')
+              replace.forEach((index, i) => (boardArray[index] = frees[i]))
+              const reds = getIndexes(boardArray, 'r')
               const winningReds = getIndexes(finalBoardParsed, 'r')
               if (
                 reds.filter(element => winningReds.includes(element)).length ===
@@ -120,7 +133,7 @@ const GameRefactor = () => {
             }
           }
         }
-        setVal(board)
+        setVal(boardArray)
         setCurrSelected('')
       } else {
         //NO VALID MOVEMENT
@@ -131,15 +144,15 @@ const GameRefactor = () => {
 
   return (
     <View>
-      {arr.map((array, y) => {
+      {baseGrid.map((array, y) => {
         return (
           <View style={{flex: 1, flexDirection: 'row'}} key={y}>
             {array.map((_, x) => {
               const {styleCircle, styleBox} = getStyle(
                 x + 6 * y,
-                val[x + 6 * y],
+                stateBoard[x + 6 * y],
                 {
-                  ...val,
+                  ...stateBoard,
                 },
                 currSelected,
               )
@@ -155,7 +168,7 @@ const GameRefactor = () => {
                     alignItems: 'center',
                   }}
                   onTouchStart={() => {
-                    handleTouch(val[x + 6 * y], {...val})
+                    handleTouch(stateBoard[x + 6 * y], {...stateBoard})
                   }}>
                   <View
                     style={{
