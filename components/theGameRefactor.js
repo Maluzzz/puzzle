@@ -30,14 +30,9 @@ const GameRefactor = () => {
     typeToChange,
     beforeType,
   ) => {
-    /**
-     * Change the type of the touched piece to 's'
-     * this means is going to show in other color
-     */
     destiny.forEach(index => {
       board[index] = typeToChange
     })
-    /**Return the originelected piece to their color */
     origin.forEach((index, i) => {
       board[index] = beforeType[i] || beforeType[0]
     })
@@ -77,57 +72,46 @@ const GameRefactor = () => {
       let replace = [...overlap, ...selected]
       const isYellow = yellows.includes(currSelected)
       const isBlackOrRed = restPiezes.includes(currSelected)
-      if (isYellow) {
-        /**one cell pieces are the easier to move */
+      const oneFreeNeeded =
+        isYellow || (isBlackOrRed && aroundCoincide.length === 0)
+      if (oneFreeNeeded) {
+        notOverlap = isYellow ? beforeSelected : notOverlap
+        changePiece(boardArray, type, notOverlap, replace, currSelected, type)
+      } else {
+        const isTwoFreeAround =
+          boardArray[aroundCoincide[0]] !== 'F' &&
+          boardArray[aroundCoincide[0]] !== 'f'
+        if (isTwoFreeAround) {
+          return null
+        }
+        const aroundTwoFree = getAround([...aroundCoincide, ...selected])
+
+        overlap =
+          currSelected === 'r'
+            ? beforeSelected.filter(pieza => aroundTwoFree.includes(pieza))
+            : overlap
+        notOverlap =
+          currSelected === 'r'
+            ? beforeSelected.filter(pieza => !aroundTwoFree.includes(pieza))
+            : notOverlap
+        replace = currSelected !== 'r' ? beforeSelected : notOverlap
         changePiece(
           boardArray,
           type,
-          beforeSelected,
-          selected,
+          replace,
+          [...selected, ...aroundCoincide, ...overlap],
           currSelected,
-          type,
+          frees,
         )
+        checkIfIsWinner(boardArray)
       }
-      if (isBlackOrRed) {
-        if (aroundCoincide.length === 0) {
-          /**Movements that only requires one free piece*/
-          replace = [...overlap, ...selected]
-          changePiece(boardArray, type, notOverlap, replace, currSelected, type)
-        } else {
-          const isTwoFreeAround =
-            boardArray[aroundCoincide[0]] !== 'F' &&
-            boardArray[aroundCoincide[0]] !== 'f'
-          if (isTwoFreeAround) {
-            return null
-          }
-          const aroundTwoFree = getAround([...aroundCoincide, ...selected])
-
-          overlap =
-            currSelected === 'r'
-              ? beforeSelected.filter(pieza => aroundTwoFree.includes(pieza))
-              : overlap
-          notOverlap =
-            currSelected === 'r'
-              ? beforeSelected.filter(pieza => !aroundTwoFree.includes(pieza))
-              : notOverlap
-          replace = currSelected !== 'r' ? beforeSelected : notOverlap
-          changePiece(
-            boardArray,
-            type,
-            replace,
-            [...selected, ...aroundCoincide, ...overlap],
-            currSelected,
-            frees,
-          )
-          const reds = getIndexes(boardArray, 'r')
-          const winningReds = getIndexes(finalBoardParsed, 'r')
-          if (
-            reds.filter(element => winningReds.includes(element)).length === 4
-          ) {
-            Alert.alert('YOU WIN')
-          }
-        }
-      }
+    }
+  }
+  const checkIfIsWinner = boardArray => {
+    const reds = getIndexes(boardArray, 'r')
+    const winningReds = getIndexes(finalBoardParsed, 'r')
+    if (reds.filter(element => winningReds.includes(element)).length === 4) {
+      Alert.alert('YOU WIN')
     }
   }
 
