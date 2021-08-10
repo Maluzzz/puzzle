@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react'
-import {Alert, View} from 'react-native'
+import {Alert, Text, View} from 'react-native'
 
 import {
   initBoard,
@@ -25,8 +25,8 @@ const GameRefactor = () => {
   const changePiece = (
     board,
     type,
-    beforeS,
-    selected,
+    origin,
+    destiny,
     typeToChange,
     beforeType,
   ) => {
@@ -34,14 +34,13 @@ const GameRefactor = () => {
      * Change the type of the touched piece to 's'
      * this means is going to show in other color
      */
-    selected.forEach(index => {
+    destiny.forEach(index => {
       board[index] = typeToChange
     })
-    /**Return the beforeSelected piece to their color */
-    beforeS.forEach(index => {
-      board[index] = beforeType
+    /**Return the originelected piece to their color */
+    origin.forEach((index, i) => {
+      board[index] = beforeType[i] || beforeType[0]
     })
-
     setVal(board)
     setCurrSelected(type)
   }
@@ -49,16 +48,22 @@ const GameRefactor = () => {
     let boardArray = Object.keys(board).map(i => board[i])
     const selected = getIndexes(boardArray, type)
     const beforeSelected = getIndexes(boardArray, 's')
-    /**
-     * If the piece touched is a selectable one
-     */
-    if (!notSelectable.includes(type)) {
+
+    const isValidPiece = !notSelectable.includes(type)
+    if (isValidPiece) {
       changePiece(boardArray, type, beforeSelected, selected, 's', currSelected)
     }
+
     const isFreeTouched = type === 'F' || type === 'f'
+
     if (isFreeTouched) {
-      const aroundFreeSelected = getAround(selected)
       const aroundSelected = getAround(beforeSelected)
+      const isFreeAround =
+        selected.filter(pieza => aroundSelected.includes(pieza)).length !== 0
+      if (!isFreeAround) {
+        return null
+      }
+      const aroundFreeSelected = getAround(selected)
       const aroundCoincide = aroundSelected.filter(one =>
         aroundFreeSelected.includes(one),
       )
@@ -68,76 +73,60 @@ const GameRefactor = () => {
       let notOverlap = beforeSelected.filter(
         pieza => !aroundFreeSelected.includes(pieza),
       )
-      let replace = [...overlap, ...selected]
 
-      if (
-        selected.filter(pieza => aroundSelected.includes(pieza)).length !== 0
-      ) {
-        if (yellows.includes(currSelected)) {
-          /**one cell pieces are the easier to move */
+      let replace = [...overlap, ...selected]
+      const isYellow = yellows.includes(currSelected)
+      const isBlackOrRed = restPiezes.includes(currSelected)
+      if (isYellow) {
+        /**one cell pieces are the easier to move */
+        changePiece(
+          boardArray,
+          type,
+          beforeSelected,
+          selected,
+          currSelected,
+          type,
+        )
+      }
+      if (isBlackOrRed) {
+        if (aroundCoincide.length === 0) {
+          /**Movements that only requires one free piece*/
+          replace = [...overlap, ...selected]
+          changePiece(boardArray, type, notOverlap, replace, currSelected, type)
+        } else {
+          const isTwoFreeAround =
+            boardArray[aroundCoincide[0]] !== 'F' &&
+            boardArray[aroundCoincide[0]] !== 'f'
+          if (isTwoFreeAround) {
+            return null
+          }
+          const aroundTwoFree = getAround([...aroundCoincide, ...selected])
+
+          overlap =
+            currSelected === 'r'
+              ? beforeSelected.filter(pieza => aroundTwoFree.includes(pieza))
+              : overlap
+          notOverlap =
+            currSelected === 'r'
+              ? beforeSelected.filter(pieza => !aroundTwoFree.includes(pieza))
+              : notOverlap
+          replace = currSelected !== 'r' ? beforeSelected : notOverlap
           changePiece(
             boardArray,
             type,
-            beforeSelected,
-            selected,
+            replace,
+            [...selected, ...aroundCoincide, ...overlap],
             currSelected,
-            type,
+            frees,
           )
-        }
-        if (restPiezes.includes(currSelected)) {
-          if (aroundCoincide.length === 0) {
-            /**Movements that only requires one free piece*/
-            replace = [...overlap, ...selected]
-            changePiece(
-              boardArray,
-              type,
-              notOverlap,
-              replace,
-              currSelected,
-              type,
-            )
-          } else {
-            if (
-              boardArray[aroundCoincide[0]] !== 'F' &&
-              boardArray[aroundCoincide[0]] !== 'f'
-            ) {
-              //NO VALID MOVEMENT
-              return null
-            } else {
-              const aroundTwoFree = getAround([...aroundCoincide, ...selected])
-              overlap =
-                currSelected === 'r'
-                  ? beforeSelected.filter(pieza =>
-                      aroundTwoFree.includes(pieza),
-                    )
-                  : overlap
-              notOverlap =
-                currSelected === 'r'
-                  ? beforeSelected.filter(
-                      pieza => !aroundTwoFree.includes(pieza),
-                    )
-                  : notOverlap
-              ;[...selected, ...aroundCoincide, ...overlap].forEach(
-                index => (boardArray[index] = currSelected),
-              )
-              replace = currSelected !== 'r' ? beforeSelected : notOverlap
-              replace.forEach((index, i) => (boardArray[index] = frees[i]))
-              const reds = getIndexes(boardArray, 'r')
-              const winningReds = getIndexes(finalBoardParsed, 'r')
-              if (
-                reds.filter(element => winningReds.includes(element)).length ===
-                4
-              ) {
-                Alert.alert('YOU WIN')
-              }
-            }
+          const reds = getIndexes(boardArray, 'r')
+          const winningReds = getIndexes(finalBoardParsed, 'r')
+          if (
+            reds.filter(element => winningReds.includes(element)).length === 4
+          ) {
+            Alert.alert('YOU WIN')
           }
         }
-        setVal(boardArray)
-        setCurrSelected('')
-      } else {
-        //NO VALID MOVEMENT
-        return null
       }
     }
   }
@@ -175,7 +164,9 @@ const GameRefactor = () => {
                       ...styleCircle,
                       width: 30,
                       height: 30,
-                    }}></View>
+                    }}>
+                    <Text>{x + 6 * y}</Text>
+                  </View>
                 </View>
               )
             })}
