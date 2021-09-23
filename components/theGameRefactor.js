@@ -72,8 +72,7 @@ const GameRefactor = () => {
       let replace = [...overlap, ...selected]
       const isYellow = yellows.includes(currSelected)
       const isBlackOrRed = restPiezes.includes(currSelected)
-      const oneFreeNeeded =
-        isYellow || (isBlackOrRed && aroundCoincide.length === 0)
+      const oneFreeNeeded = isYellow || (isBlackOrRed && aroundCoincide.length === 0)
       if (oneFreeNeeded) {
         notOverlap = isYellow ? beforeSelected : notOverlap
         changePiece(boardArray, type, notOverlap, replace, currSelected, type)
@@ -85,7 +84,6 @@ const GameRefactor = () => {
           return null
         }
         const aroundTwoFree = getAround([...aroundCoincide, ...selected])
-
         overlap =
           currSelected === 'r'
             ? beforeSelected.filter(pieza => aroundTwoFree.includes(pieza))
@@ -116,10 +114,14 @@ const GameRefactor = () => {
   }
 
   return (
-    <View>
+    <View style={{  position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,display:'flex', paddingTop:150,height:'100%'}}>
       {baseGrid.map((array, y) => {
         return (
-          <View style={{flex: 1, flexDirection: 'row'}} key={y}>
+          <View style={{flex: 1, flexDirection: 'row', marginTop:150 }} key={y}>
             {array.map((_, x) => {
               const {styleCircle, styleBox} = getStyle(
                 x + 6 * y,

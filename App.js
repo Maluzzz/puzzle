@@ -24,6 +24,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import GameRefactor from './components/theGameRefactor'
+import Refactor from './components/refactored';
 
 
 
@@ -40,7 +41,8 @@ const App: () => Node = () => {
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView
         style={backgroundStyle}>
-        <GameRefactor/>
+        
+        <Refactor/>
       </ScrollView>
     </SafeAreaView>
   );

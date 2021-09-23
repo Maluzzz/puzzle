@@ -5,8 +5,8 @@ import {
   yellows,
   DARK_BROWN,
   LIGHT_BROWN,
-  GREY_LIGHT,
   BORDER_COLOR,
+  CORNERS_RADIUS,
 } from '../constans'
 
 export const getStyle = (position, type, copyVal, currSelected) => {
@@ -126,10 +126,44 @@ export const getStyle = (position, type, copyVal, currSelected) => {
     }
   }
   if (type === '_') {
+    if (position === 0) {
+      return {
+        styleBox: {
+          borderColor: DARK_BROWN,
+          backgroundColor: DARK_BROWN,
+          ...styles.completeBox,
+          borderTopLeftRadius: 30,
+        },
+      }
+    }
+    if (position === 5) {
+      return {
+        styleBox: {
+          borderColor: DARK_BROWN,
+          backgroundColor: DARK_BROWN,
+          ...styles.completeBox,
+          borderTopRightRadius: 30,
+          width: 30,
+                             
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+      }
+    }
+    if (position === 4) {
+      return {
+        styleBox: {
+          borderColor: DARK_BROWN,
+          backgroundColor: DARK_BROWN,
+          ...styles.completeBox,
+          width: 30,
+        },
+      }
+    }
     return {
       styleBox: {
-        borderColor: 'white',
-        backgroundColor: 'white',
+        borderColor: DARK_BROWN,
+        backgroundColor: DARK_BROWN,
         ...styles.completeBox,
       },
     }
@@ -137,8 +171,9 @@ export const getStyle = (position, type, copyVal, currSelected) => {
   return {
     styleBox: {
       borderColor: BORDER_COLOR,
-      backgroundColor: GREY_LIGHT,
+      backgroundColor: BORDER_COLOR,
       ...styles.completeBox,
+      borderRadius: 0,
     },
   }
 }
@@ -150,6 +185,7 @@ const styles = StyleSheet.create({
   },
   completeBox: {
     borderWidth: 0.5,
+    borderRadius: 2,
   },
   middleCircleLeft: {
     borderRadius: 60,
@@ -166,12 +202,16 @@ const styles = StyleSheet.create({
     borderTopColor: BORDER_COLOR,
     borderBottomColor: BORDER_COLOR,
     borderLeftColor: BORDER_COLOR,
+    borderBottomLeftRadius: CORNERS_RADIUS,
+    borderTopLeftRadius: CORNERS_RADIUS,
   },
   middleBoxLeft: {
     borderWidth: 0.5,
     borderRightColor: BORDER_COLOR,
     borderTopColor: BORDER_COLOR,
     borderBottomColor: BORDER_COLOR,
+    borderBottomRightRadius: CORNERS_RADIUS,
+    borderTopRightRadius: CORNERS_RADIUS,
   },
   middleCircleUp: {
     borderRadius: 60,
@@ -187,32 +227,40 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRightColor: BORDER_COLOR,
     borderTopColor: BORDER_COLOR,
+    borderTopRightRadius: CORNERS_RADIUS,
+    borderTopLeftRadius: CORNERS_RADIUS,
   },
   middleBoxUp: {
     borderWidth: 0.5,
     borderRightColor: BORDER_COLOR,
     borderBottomColor: BORDER_COLOR,
     borderLeftColor: BORDER_COLOR,
+    borderBottomRightRadius: CORNERS_RADIUS,
+    borderBottomLeftRadius: CORNERS_RADIUS,
   },
   squareBoxRightDown: {
     borderWidth: 0.5,
     borderRightColor: BORDER_COLOR,
     borderBottomColor: BORDER_COLOR,
+    borderBottomRightRadius: CORNERS_RADIUS,
   },
   squareBoxRightUp: {
     borderWidth: 0.5,
     borderRightColor: BORDER_COLOR,
     borderTopColor: BORDER_COLOR,
+    borderTopRightRadius: CORNERS_RADIUS,
   },
   squareBoxLeftUp: {
     borderWidth: 0.5,
     borderLeftColor: BORDER_COLOR,
     borderTopColor: BORDER_COLOR,
+    borderTopLeftRadius: CORNERS_RADIUS,
   },
   squareBoxLeftDown: {
     borderWidth: 0.5,
     borderBottomColor: BORDER_COLOR,
     borderLeftColor: BORDER_COLOR,
+    borderBottomLeftRadius: CORNERS_RADIUS,
   },
   squareLeftUp: {
     marginTop: 60,

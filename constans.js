@@ -14,6 +14,14 @@ _ t p v v _
 _ x r r F _
 _ i r r f _
 `
+export const almostFinished = `
+_ _ _ _ _ _
+_ w k o b _
+_ t p o b _
+_ t p v v _
+_ x F r r _
+_ i f r r _
+`
 
 export const colors = {
   b: {color: '#005F73'},
@@ -39,7 +47,8 @@ export default frees
 export const notSelectable = ['s', '_', 'F', 'f']
 export const restPiezes = ['o', 'b', 'p', 't', 'r', 'v']
 
-export const DARK_BROWN = '#532E1C'
+export const DARK_BROWN = '#532E10'
 export const BORDER_COLOR = '#6A6262'
 export const LIGHT_BROWN = '#C5A880'
 export const GREY_LIGHT = '#9C9990'
+export const CORNERS_RADIUS = 4
