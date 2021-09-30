@@ -1,24 +1,39 @@
 import {getIndexes} from './utils'
 import {StyleSheet} from 'react-native'
 import {
-  verticalB,
-  yellows,
+  verticalPieces,
+  oneSquarePieces,
   DARK_BROWN,
   LIGHT_BROWN,
   BORDER_COLOR,
   CORNERS_RADIUS,
 } from '../constans'
 
-export const getStyle = (position, type, copyVal, currSelected) => {
-  copyVal = Object.keys(copyVal).map(i => copyVal[i])
-  const indexes = getIndexes(copyVal, type)
-  if (type === 'v' || (type === 's' && currSelected === 'v')) {
-    if (position === Math.max(...indexes)) {
+
+export const getStyle = (position, type, board, currSelected) => {
+  board = Object.keys(board).map(i => board[i])
+  const indexes = getIndexes(board, type)
+  const selected = type === 's'
+  const colorSelected = selected ? DARK_BROWN : LIGHT_BROWN
+  const bottomRightPiece = position === Math.max(...indexes)
+  const topLeftPiece =  position === Math.min(...indexes)
+  const isHorizontalPiece = type === 'v' || (selected && currSelected === 'v')
+  const isBorder = type === '_'
+  const isBigSquarePiece = type === 'r' || (selected && currSelected === 'r')
+  const isVerticalPiece =
+    verticalPieces.includes(type) ||
+    (selected && verticalPieces.includes(currSelected))
+  const isOnePiece =
+    oneSquarePieces.includes(type) ||
+    (selected && oneSquarePieces.includes(currSelected))
+
+  if (isHorizontalPiece) {
+    if (bottomRightPiece) {
       return {
         styleCircle: styles.middleCircleLeft,
         styleBox: {
-          backgroundColor: currSelected === 'v' ? DARK_BROWN : LIGHT_BROWN,
-          borderLeftColor: currSelected === 'v' ? DARK_BROWN : LIGHT_BROWN,
+          backgroundColor: colorSelected,
+          borderLeftColor: colorSelected,
           ...styles.middleBoxLeft,
         },
       }
@@ -26,68 +41,63 @@ export const getStyle = (position, type, copyVal, currSelected) => {
     return {
       styleCircle: styles.middleCircleRight,
       styleBox: {
-        backgroundColor: currSelected === 'v' ? DARK_BROWN : LIGHT_BROWN,
-        borderRightColor: currSelected === 'v' ? DARK_BROWN : LIGHT_BROWN,
+        backgroundColor: colorSelected,
+        borderRightColor: colorSelected,
         ...styles.middleBoxRight,
       },
     }
   }
-  if (
-    verticalB.includes(type) ||
-    (type === 's' && verticalB.includes(currSelected))
-  ) {
-    if (position === Math.max(...indexes)) {
+  if (isVerticalPiece) {
+    if (bottomRightPiece) {
       return {
         styleCircle: styles.middleCircleUp,
         styleBox: {
           ...styles.middleBoxUp,
-          backgroundColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
-          borderTopColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
+          backgroundColor: colorSelected,
+          borderTopColor: colorSelected,
         },
       }
     }
     return {
       styleCircle: styles.middleCircleDown,
       styleBox: {
-        backgroundColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
-        borderBottomColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
+        backgroundColor: colorSelected,
+        borderBottomColor: colorSelected,
         ...styles.middleBoxDown,
       },
     }
   }
-  if (
-    yellows.includes(type) ||
-    (type === 's' && yellows.includes(currSelected))
-  ) {
+  if (isOnePiece) {
     return {
       styleCircle: styles.completeCircle,
       styleBox: {
-        borderColor: BORDER_COLOR,
-        backgroundColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
         ...styles.completeBox,
+        borderColor: BORDER_COLOR,
+        backgroundColor: colorSelected,
+        borderRadius: CORNERS_RADIUS,
       },
     }
   }
 
-  if (type === 'r' || (type === 's' && currSelected === 'r')) {
-    if (position === Math.max(...indexes)) {
+  if (isBigSquarePiece) {
+    if (bottomRightPiece) {
       return {
         styleCircle: styles.squareRightDown,
         styleBox: {
-          borderTopColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
-          borderLeftColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
-          backgroundColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
+          borderTopColor: colorSelected,
+          borderLeftColor: colorSelected,
+          backgroundColor: colorSelected,
           ...styles.squareBoxRightDown,
         },
       }
     }
-    if (position === Math.min(...indexes)) {
+    if (topLeftPiece) {
       return {
         styleCircle: styles.squareLeftUp,
         styleBox: {
-          borderBottomColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
-          backgroundColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
-          borderRightColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
+          borderBottomColor: colorSelected,
+          backgroundColor: colorSelected,
+          borderRightColor: colorSelected,
           ...styles.squareBoxLeftUp,
         },
       }
@@ -101,9 +111,9 @@ export const getStyle = (position, type, copyVal, currSelected) => {
       return {
         styleCircle: styles.squareLeftDown,
         styleBox: {
-          borderRightColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
-          backgroundColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
-          borderTopColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
+          borderRightColor: colorSelected,
+          backgroundColor: colorSelected,
+          borderTopColor: colorSelected,
           ...styles.squareBoxLeftDown,
         },
       }
@@ -117,21 +127,19 @@ export const getStyle = (position, type, copyVal, currSelected) => {
       return {
         styleCircle: styles.squareRightUp,
         styleBox: {
-          borderBottomColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
-          borderLeftColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
-          backgroundColor: type === 's' ? DARK_BROWN : LIGHT_BROWN,
+          borderBottomColor: colorSelected,
+          borderLeftColor: colorSelected,
+          backgroundColor: colorSelected,
           ...styles.squareBoxRightUp,
         },
       }
     }
   }
-  if (type === '_') {
+  if (isBorder) {
     if (position === 0) {
       return {
         styleBox: {
-          borderColor: DARK_BROWN,
-          backgroundColor: DARK_BROWN,
-          ...styles.completeBox,
+          ...styles.borderStyle,
           borderTopLeftRadius: 30,
         },
       }
@@ -139,36 +147,28 @@ export const getStyle = (position, type, copyVal, currSelected) => {
     if (position === 5) {
       return {
         styleBox: {
-          borderColor: DARK_BROWN,
-          backgroundColor: DARK_BROWN,
-          ...styles.completeBox,
+          ...styles.borderStyle,
           borderTopRightRadius: 30,
           width: 30,
-                             
-          justifyContent: 'center',
-          alignItems: 'center',
         },
       }
     }
     if (position === 4) {
       return {
         styleBox: {
-          borderColor: DARK_BROWN,
-          backgroundColor: DARK_BROWN,
-          ...styles.completeBox,
+          ...styles.borderStyle,
           width: 30,
         },
       }
     }
     return {
       styleBox: {
-        borderColor: DARK_BROWN,
-        backgroundColor: DARK_BROWN,
-        ...styles.completeBox,
+        ...styles.borderStyle,
       },
     }
   }
   return {
+    //free pieces
     styleBox: {
       borderColor: BORDER_COLOR,
       backgroundColor: BORDER_COLOR,
@@ -183,9 +183,12 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     backgroundColor: '#F7EA00',
   },
+  borderStyle: {
+    borderColor: DARK_BROWN,
+    backgroundColor: DARK_BROWN,
+  },
   completeBox: {
     borderWidth: 0.5,
-    borderRadius: 2,
   },
   middleCircleLeft: {
     borderRadius: 60,

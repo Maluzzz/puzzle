@@ -6,48 +6,17 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import React from 'react'
+import {ScrollView} from 'react-native'
 
-import {
-  Colors,
+import Refactor from './components/refactored'
 
-} from 'react-native/Libraries/NewAppScreen';
-
-import GameRefactor from './components/theGameRefactor'
-import Refactor from './components/refactored';
-
-
-
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+const App = () => {
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <ScrollView>
+      <Refactor />
+    </ScrollView>
+  )
+}
 
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        style={backgroundStyle}>
-        
-        <Refactor/>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
-
-
-
-export default App;
+export default App

@@ -1,14 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react'
-import {Alert, Text, View} from 'react-native'
-import {Dimensions} from 'react-native'
-const {Height} = Dimensions.get('window')
+import {Alert, View} from 'react-native'
+
+
 import {
   initBoard,
   frees,
   finalBoard,
   notSelectable,
-  yellows,
+  oneSquarePieces,
   restPiezes,
   almostFinished,
   BORDER_COLOR,
@@ -94,7 +94,7 @@ const Refactor = () => {
     )
 
     let replace = [...overlap, ...selectedPiece]
-    const isOneBlockPiece = yellows.includes(currSelectedPiece)
+    const isOneBlockPiece = oneSquarePieces.includes(currSelectedPiece)
     const isMultipleBlocksPiece = restPiezes.includes(currSelectedPiece)
     const oneFreeNeeded =
       isOneBlockPiece || (isMultipleBlocksPiece && aroundCoincide.length === 0)
